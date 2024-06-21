@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Behavior Visualization</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .line {
+            fill: none;
+            stroke-width: 2px;
+        }
+        .good-line { stroke: steelblue; }
+        .bad-line { stroke: red; }
+        .axis-label {
+            font-size: 14px;
+        }
+        .grid line {
+            stroke: #ddd;
+            stroke-dasharray: 2,2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Customer Behavior Visualization</h1>
+    <div class="container">
+        <div>
+            <label><input type="checkbox" class="line-checkbox" data-line="Good" checked> Good</label>
+            <label><input type="checkbox" class="line-checkbox" data-line="Bad" checked> Bad</label>
+        </div>
+        <svg id="chart" width="960" height="500"></svg>
+    </div>
+    <script src="customer_behavior_chart.js"></script>
+</body>
+</html>

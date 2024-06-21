@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Applications Rate Chart</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .chart {
+            margin-top: 20px;
+        }
+        .selector-container {
+            margin-top: 20px;
+        }
+        .legend text {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h1>Applications Rate Chart</h1>
+        <div class="selector-container">
+            <label>Select parameters to show:</label><br>
+            <div class="selector-container">
+                <label><input type="checkbox" class="line-checkbox" data-line="Reject_rate" checked> Reject Rate</label><br>
+                <label><input type="checkbox" class="line-checkbox" data-line="Accept_rate" checked> Accept Rate</label><br>
+                <label><input type="checkbox" class="line-checkbox" data-line="Contract_rate" checked> Contract Rate</label><br>
+                <label><input type="checkbox" class="line-checkbox" data-line="Refinancing_rate" checked> Refinancing Rate</label><br>
+                <label><input type="checkbox" class="line-checkbox" data-line="New_Contract_rate" checked> New Contract Rate</label><br>
+                <label><input type="checkbox" class="line-checkbox" data-line="NTU_rate" checked> NTU Rate</label><br>
+            </div>
+            
+        </div>
+        <svg id="chart" class="chart" width="1200" height="600"></svg>
+    </div>
+    <script src="applications_rate_chart.js"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Geo Report Heatmap</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .axis text {
+            font-size: 12px;
+        }
+        .axis line,
+        .axis path {
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+        .legend rect {
+            stroke-width: 2;
+        }
+        .heatmap-container {
+            margin-bottom: 50px;
+            text-align: center;
+        }
+        .heatmap-container svg {
+            display: block;
+            margin: auto;
+        }
+        .legend {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Geo Report Heatmap</h1>
+    <div id="heatmap1" class="heatmap-container"></div>
+    <div id="heatmap2" class="heatmap-container"></div>
+    <div id="heatmap3" class="heatmap-container"></div>
+    <script src="geo_report_heatmap.js"></script>
+</body>
+</html>

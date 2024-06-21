@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Filter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            text-align: center;
+            color: #343a40;
+        }
+        form {
+            max-width: 800px;
+            margin: 0 auto 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #495057;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 3px;
+            border: 1px solid #ced4da;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        iframe {
+            margin-top: 20px;
+            display: block;
+        }
+        .frame-text {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Filter Data</h1>
+    <form id="filter-form">
+        <label for="status">Status:</label>
+        <select id="status"></select><br>
+        <label for="product">Product:</label>
+        <select id="product"></select><br>
+        <label for="existing">Existing:</label>
+        <select id="existing"></select><br>
+        <label for="refinancing">Refinancing:</label>
+        <select id="refinancing"></select><br>
+        <label for="refinanced">Refinanced:</label>
+        <select id="refinanced"></select><br>
+        <label for="city">City/Town:</label>
+        <select id="city"></select><br>
+        <label for="min-amount">Credit Amount Min:</label>
+        <input type="number" id="min-amount" placeholder="Min Amount"><br>
+        <label for="max-amount">Credit Amount Max:</label>
+        <input type="number" id="max-amount" placeholder="Max Amount"><br>
+        <label for="date-begin">Date Begin:</label>
+        <input type="date" id="date-begin"><br>
+        <label for="date-end">Date End:</label>
+        <input type="date" id="date-end"><br>
+        <button type="submit">Filter</button>
+    </form>
+
+    <iframe id="data-iframe" src="cashflow_chart.html" frameborder="0" width="100%" height="550"></iframe>
+    <div id="frame-text1" class="frame-text"></div>
+    <iframe id="data-iframe-contract" src="contract_chart.html" frameborder="0" width="100%" height="550"></iframe>
+    <div id="frame-text2" class="frame-text"></div>
+    <iframe id="data-iframe-applications" src="applications_chart.html" frameborder="0" width="100%" height="550"></iframe>
+    <div id="frame-text3" class="frame-text"></div>
+    <iframe id="data-iframe-applications-rate" src="applications_rate_chart.html" frameborder="0" width="100%" height="900"></iframe>
+    <div id="frame-text4" class="frame-text"></div>
+    <iframe id="data-iframe-customer-behavior" src="customer_behavior.html" frameborder="0" width="100%" height="700"></iframe>
+    <div id="frame-text5" class="frame-text"></div>
+    <iframe id="data-iframe-customer-behavior-piechart" src="customer_behavior_piechart.html" frameborder="0" width="100%" height="700"></iframe>
+    <iframe id="data-iframe-geo-report-heatmap" src="geo_report_heatmap.html" frameborder="0" width="100%" height="1000"></iframe>
+    <div id="frame-text6" class="frame-text"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch filter values
+            fetch('/filters')
+                .then(response => response.json())
+                .then(data => {
+                    populateSelect('status', data.CPF_RequestStatus);
+                    populateSelect('product', data.CPF_CreditProduct_Approved);
+                    populateSelect('existing', data.CPH_NewClient);
+                    populateSelect('refinancing', data.APP_IsRefinance);
+                    populateSelect('refinanced', data.CPF_IsRefinanced);
+                    populateSelect('city', data.APP_AddressRegion);
+                });
+
+            function populateSelect(id, values) {
+                const select = document.getElementById(id);
+                select.innerHTML = '<option value="">All</option>';
+                values.forEach(value => {
+                    const option = document.createElement('option');
+                    option.value = value;
+                    option.textContent = value;
+                    select.appendChild(option);
+                });
+            }
+
+            document.getElementById('filter-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const filters = {
+                    CPF_RequestStatus: document.getElementById('status').value,
+                    CPF_CreditProduct_Approved: document.getElementById('product').value,
+                    CPH_NewClient: document.getElementById('existing').value,
+                    APP_IsRefinance: document.getElementById('refinancing').value,
+                    CPF_IsRefinanced: document.getElementById('refinanced').value,
+                    APP_AddressRegion: document.getElementById('city').value,
+                    CPF_LoanAmount_Approved_Min: document.getElementById('min-amount').value,
+                    CPF_LoanAmount_Approved_Max: document.getElementById('max-amount').value,
+                    DateBegin: document.getElementById('date-begin').value,
+                    DateEnd: document.getElementById('date-end').value
+                };
+
+                // Post filters to server
+                fetch('/filter', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(filters)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.message);
+                });
+            });
+
+            // Fetch and display output text
+            fetch('/output-text')
+                .then(response => response.text())
+                .then(data => {
+                    const sections = data.split(/### \d+\.\s*/).filter(Boolean);
+                    sections.forEach((section, index) => {
+                        const frameText = document.getElementById(`frame-text${index + 1}`);
+                        if (frameText) {
+                            frameText.innerHTML = section.trim();
+                        }
+                    });
+                });
+
+            // WebSocket connection for notifications
+            const socket = new WebSocket('ws://http://localhost:4001');
+
+            socket.onmessage = function(event) {
+                if (event.data === 'All processes completed successfully') {
+                    document.getElementById('data-iframe').src = document.getElementById('data-iframe').src;
+                    document.getElementById('data-iframe-contract').src = document.getElementById('data-iframe-contract').src;
+                    document.getElementById('data-iframe-applications').src = document.getElementById('data-iframe-applications').src;
+                    document.getElementById('data-iframe-applications-rate').src = document.getElementById('data-iframe-applications-rate').src;
+                    document.getElementById('data-iframe-customer-behavior').src = document.getElementById('data-iframe-customer-behavior').src;
+                    document.getElementById('data-iframe-customer-behavior-piechart').src = document.getElementById('data-iframe-customer-behavior-piechart').src;
+                    document.getElementById('data-iframe-geo-report-heatmap').src = document.getElementById('data-iframe-geo-report-heatmap').src;
+
+
+                    // Refresh text divs
+                    const frameText1 = document.getElementById('frame-text1');
+                    const frameText2 = document.getElementById('frame-text2');
+                    const frameText3 = document.getElementById('frame-text3');
+                    const frameText4 = document.getElementById('frame-text4');
+                    const frameText5 = document.getElementById('frame-text5');
+                    const frameText6 = document.getElementById('frame-text6');
+
+                    // Fetch and display output text
+                    fetch('/output-text')
+                        .then(response => response.text())
+                        .then(data => {
+                            const sections = data.split(/### \d+\.\s*/).filter(Boolean);
+                            sections.forEach((section, index) => {
+                                const frameText = document.getElementById(`frame-text${index + 1}`);
+                                if (frameText) {
+                                    frameText.innerHTML = section.trim();
+                                }
+                            });
+                        });
+
+                }
+            };
+        });
+    </script>
+</body>
+</html>
